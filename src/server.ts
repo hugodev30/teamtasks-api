@@ -1,13 +1,20 @@
-import express from 'express';
-import type { Express, Request, Response } from 'express';
+import app from './app';
 
-const app: Express = express();
-const port = process.env.PORT ?? 3333;
+const PORT: number = Number(process.env.PORT) || 3000;
 
-app.get('/health', (_req: Request, res: Response) => {
-  res.json({ status: 'ok' });
-});
+// Encapsulated startup function
+async function startServer(): Promise<void> {
+  try {
+    // 💡 Connect to databases (e.g., MongoDB, PostgreSQL, Redis) here first
+    // await database.connect();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 Server successfully running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ Failed to start the server:', error);
+    process.exit(1);
+  }
+}
 
-app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
-});
+startServer();

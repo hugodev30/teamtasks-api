@@ -35,7 +35,7 @@ REST API for team task management: teams, members with roles, projects, and task
 | Language       | TypeScript (strict mode)              |
 | Framework      | Express 5                             |
 | Validation     | Zod                                   |
-| Database / ORM | PostgreSQL + Prisma _(coming soon)_   |
+| Database / ORM | PostgreSQL + Prisma                   |
 | Code quality   | ESLint, Prettier                      |
 
 ## Getting started
@@ -63,17 +63,57 @@ The API will be available at `http://localhost:3333`.
 | -------------- | --------------------------------------------- | ------------- |
 | `NODE_ENV`     | `development`, `test` or `production`         | `development` |
 | `PORT`         | Port the server listens on                    | `3333`        |
-| `DATABASE_URL` | PostgreSQL connection string _(not used yet)_ | none          |
+| `DATABASE_URL` | PostgreSQL connection string                  | none          |
+
+## Database
+
+The API uses PostgreSQL with Prisma ORM.
+
+### 1. Start PostgreSQL with Docker
+
+```bash
+docker run --name teamtasks-db -e POSTGRES_USER=teamtasks -e POSTGRES_PASSWORD=teamtasks -e POSTGRES_DB=teamtasks -p 5433:5432 -d postgres:16
+```
+
+Then set `DATABASE_URL` in your `.env`:
+
+```
+DATABASE_URL="postgresql://teamtasks:teamtasks@localhost:5433/teamtasks?schema=public"
+```
+
+### 2. Run migrations and generate the client
+
+```bash
+npm run db:migrate
+npm run db:generate
+```
+
+### 3. (Optional) Open Prisma Studio
+
+```bash
+npm run db:studio
+```
+
+### Data model
+
+- **User**: belongs to teams through memberships, creates and is assigned tasks
+- **Team**: has members (with roles `OWNER`, `ADMIN`, `MEMBER`) and projects
+- **Project**: belongs to a team and has tasks
+- **Task**: has a status (`TODO`, `IN_PROGRESS`, `DONE`), an optional assignee and comments
+- **Comment**: written by a user on a task
 
 ## Scripts
 
-| Command          | Description                                  |
-| ---------------- | -------------------------------------------- |
-| `npm run dev`    | Start the dev server with hot reload (tsx)   |
-| `npm run build`  | Compile TypeScript to `dist/`                |
-| `npm start`      | Run the compiled build                       |
-| `npm run lint`   | Run ESLint                                   |
-| `npm run format` | Format the code with Prettier                |
+| Command               | Description                                  |
+| --------------------- | -------------------------------------------- |
+| `npm run dev`         | Start the dev server with hot reload (tsx)   |
+| `npm run build`       | Compile TypeScript to `dist/`                |
+| `npm start`           | Run the compiled build                       |
+| `npm run lint`        | Run ESLint                                   |
+| `npm run format`      | Format the code with Prettier                |
+| `npm run db:migrate`  | Create and apply database migrations         |
+| `npm run db:generate` | Generate the Prisma Client                   |
+| `npm run db:studio`   | Open Prisma Studio to browse the database    |
 
 ## API endpoints
 
@@ -110,7 +150,7 @@ src/
 
 - [x] Project setup (TypeScript, ESLint, Prettier)
 - [x] Folder architecture, env validation and error handling
-- [ ] Database with PostgreSQL + Prisma
+- [x] Database with PostgreSQL + Prisma
 - [ ] Authentication (JWT)
 - [ ] Teams, members and roles
 - [ ] Projects and tasks

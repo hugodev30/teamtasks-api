@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import { errorHandler } from './middlewares/errorHandler';
+import { authRoutes } from './modules/auth/auth.routes';
 
 // Initialize the Express application instance
 const app: Application = express();
@@ -11,6 +12,8 @@ app.use(express.json()); // Parses incoming JSON payloads
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok' });
 });
+
+app.use('/auth', authRoutes);
 
 app.use(errorHandler);
 
